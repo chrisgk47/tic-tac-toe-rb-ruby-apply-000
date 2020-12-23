@@ -8,47 +8,33 @@ def display_board(board)
   puts " #{board[6]} | #{board[7]} | #{board[8]} "
 end
 
+display_board(board)
+
 def input_to_index(user_input)
   user_input.to_i - 1
 end
 
-def move(board, index, character = "X")
-  board[index] = character
+def move(board, index, player = "X")
+  board[index] = player
   return board
 end
 
+def position_taken?(board, index)
+  if (board[index] == " ") || (board[index] == "") || (board[index] == nil)
+    return false
+  else
+    return true
+  end
+end
+
 def valid_move?(board, index)
-  if index.between?(1,9)
+  if index.between?(0,8)
     if !position_taken?(board, index)
-      true
+      return true
     end
 end
 
   index.between?(0,8) && !position_taken?(board, index)
-end
-
-def position_taken?(board, index)
-  board[index] != " "
-end
-
-def turn(board)
-  puts "Please enter 1-9:"
-  num = gets.chomp
-  index = input_to_index(num)
-  if valid_move?(board, index) == true
-    move(board, index)
-    display_board(board)
-  else
-    turn(board)
-  end
-end
-
-def play(board)
-  loop = 0
-  while loop < 9
-    loop += 1
-    turn(board)
-  end
 end
 
 def turn_count(board)
@@ -60,6 +46,30 @@ def turn_count(board)
     end
   end
   counter
+end
+
+def turn(board)
+  puts "Please enter 1-9:"
+  user_input = gets.strip
+  index = input_to_index(user_input)
+  if valid_move?(board, index) == true
+    move(board, index, current_player(board))
+    display_board(board)
+  else
+    turn(board)
+  end
+end
+
+def play(board)
+  until over?(board)
+    turn(board)
+  end
+  if won?(board)
+    winner(board) == "X" || winner(board) == "O"
+    puts "Congratulations #{winner(board)}!"
+  elsif draw?(board)
+    puts "Stalemate"
+  end
 end
 
 def current_player(board)
